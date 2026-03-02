@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import re
 from pathlib import Path
 from typing import Optional
@@ -153,6 +154,7 @@ class CBMLParser:
         path: str | Path,
         known_characters: list[str] | None = None,
         known_locations: list[str] | None = None,
+        manga: bool = False,
     ) -> Comic:
         """
         Parse a CBML file from disk.
@@ -164,6 +166,9 @@ class CBMLParser:
             Character identifiers to validate against (typically uploaded image filenames).
         known_locations : list[str] | None
             Location identifiers to validate against.
+        manga : bool
+            If True, reorganise the parsed comic into manga reading order
+            (reversed pages, horizontally mirrored panels).
 
         Returns
         -------
@@ -177,13 +182,19 @@ class CBMLParser:
         """
         path = Path(path)
         text = path.read_text(encoding="utf-8")
-        return self.parse_string(text, known_characters=known_characters, known_locations=known_locations)
+        return self.parse_string(
+            text,
+            known_characters=known_characters,
+            known_locations=known_locations,
+            manga=manga,
+        )
 
     def parse_string(
         self,
         text: str,
         known_characters: list[str] | None = None,
         known_locations: list[str] | None = None,
+        manga: bool = False,
     ) -> Comic:
         """
         Parse a CBML document from a string.
@@ -193,6 +204,9 @@ class CBMLParser:
         text : str
         known_characters : list[str] | None
         known_locations : list[str] | None
+        manga : bool
+            If True, reorganise the parsed comic into manga reading order
+            (reversed pages, horizontally mirrored panels).
 
         Returns
         -------
@@ -208,6 +222,8 @@ class CBMLParser:
         if not result.valid:
             raise CBMLValidationError(errors=result.errors, warnings=result.warnings)
         comic.warnings = result.warnings
+        if manga:
+            comic = self.make_manga(comic)
         return comic
 
     def validate_file(
@@ -238,6 +254,74 @@ class CBMLParser:
             errors = e.errors if isinstance(e, CBMLValidationError) else [str(e)]
             return ValidationResult(valid=False, errors=errors, warnings=[])
         return validate_comic(comic, known_characters=known_characters, known_locations=known_locations)
+
+    # ------------------------------------------------------------------
+    # Manga transformation
+    # ------------------------------------------------------------------
+
+    _CAPTION_POS_HMIRROR: dict[str, str] = {
+        "top-left": "top-right",
+        "top-center": "top-center",
+        "top-right": "top-left",
+        "bottom-left": "bottom-right",
+        "bottom-center": "bottom-center",
+        "bottom-right": "bottom-left",
+    }
+
+    @staticmethod
+    def make_manga(comic: Comic) -> Comic:
+        """
+        Return a deep copy of *comic* reorganised for manga (right-to-left)
+        reading order.
+
+        The transformation:
+        1. **Page order** is reversed (last page becomes first).
+        2. **Panel slots** are horizontally mirrored within each page's grid
+           so that the rightmost panel becomes the leftmost.
+        3. **Caption positions** are horizontally mirrored (e.g.
+           ``top-left`` becomes ``top-right``).
+        4. Page indices are re-numbered starting from 0.
+
+        The original *comic* is not mutated.
+
+        Parameters
+        ----------
+        comic : Comic
+            A fully-parsed western-format comic.
+
+        Returns
+        -------
+        Comic
+            A new Comic in manga reading order.
+        """
+        manga_comic = copy.deepcopy(comic)
+
+        # Reverse page order
+        manga_comic.pages.reverse()
+
+        for new_idx, page in enumerate(manga_comic.pages):
+            page.index = new_idx
+
+            # Determine grid column count
+            if isinstance(page.layout, PresetLayout):
+                max_cols = PRESET_LAYOUTS[page.layout.name]["grid"][0]
+            else:
+                max_cols = page.layout.cols
+
+            # Mirror every slot horizontally
+            for label, slot in page.slots.items():
+                old_start, old_end = slot.cols
+                slot.cols = (max_cols - old_end + 1, max_cols - old_start + 1)
+
+            # Update each panel's slot reference & mirror captions
+            for panel in page.panels:
+                panel.slot = page.slots[panel.label]
+                for caption in panel.captions:
+                    caption.pos = CBMLParser._CAPTION_POS_HMIRROR.get(
+                        caption.pos, caption.pos
+                    )
+
+        return manga_comic
 
     # ------------------------------------------------------------------
     # Internal parse implementation

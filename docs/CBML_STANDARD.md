@@ -28,14 +28,15 @@
 9. [Required Fields Summary](#9-required-fields-summary)
 10. [Validation Rules](#10-validation-rules)
 11. [Reserved Keywords](#11-reserved-keywords)
-12. [Versioning](#12-versioning)
-13. [Examples](#13-examples)
-    - 13.1 [Minimal Valid Document](#131-minimal-valid-document)
-    - 13.2 [Single Page, Preset Layout](#132-single-page-preset-layout)
-    - 13.3 [Multi-Page Action Sequence](#133-multi-page-action-sequence)
-    - 13.4 [Splash Page with Narration](#134-splash-page-with-caption-narration)
-    - 13.5 [Dialogue-Heavy Scene](#135-dialogue-heavy-scene)
-    - 13.6 [Complete Short Comic](#136-complete-short-comic)
+12. [Reading Order and Manga](#12-reading-order-and-manga)
+13. [Versioning](#13-versioning)
+14. [Examples](#14-examples)
+    - 14.1 [Minimal Valid Document](#141-minimal-valid-document)
+    - 14.2 [Single Page, Preset Layout](#142-single-page-preset-layout)
+    - 14.3 [Multi-Page Action Sequence](#143-multi-page-action-sequence)
+    - 14.4 [Splash Page with Narration](#144-splash-page-with-caption-narration)
+    - 14.5 [Dialogue-Heavy Scene](#145-dialogue-heavy-scene)
+    - 14.6 [Complete Short Comic](#146-complete-short-comic)
 
 ---
 
@@ -463,15 +464,45 @@ The following tokens are reserved and MUST NOT be used as panel labels, characte
 
 ---
 
-## 12. Versioning
+## 12. Reading Order and Manga
+
+CBML documents are written in **western reading order** — left to right, top to bottom. Pages are numbered from first to last, and panels within each page are labelled in left-to-right, top-to-bottom order starting at `A`.
+
+This convention is the canonical authoring format. **All CBML documents MUST be written in western reading order**, regardless of the intended final output format.
+
+### Writing a Manga-Style Comic
+
+Manga and other right-to-left formats read pages from back to front, and panels from right to left within each page. To produce a manga-style comic from CBML:
+
+1. **Write your script in forward (western) page order.** Page 1 is the first page the reader encounters narratively — even though in a printed manga it would appear at the "back" of the physical book.
+
+2. **Use the parser's `manga` option** to transform the parsed structure into manga reading order at parse time. The parser will:
+   - **Reverse page order** — the last page becomes the first.
+   - **Horizontally mirror panel positions** — panels on the left of the grid move to the right, and vice versa.
+   - **Mirror caption positions** — e.g. `top-left` becomes `top-right`.
+
+   ```python
+   parser = CBMLParser()
+   comic = parser.parse_file("my_manga.cbml", manga=True)
+   ```
+
+3. Alternatively, if you prefer to write your script in the "physical" manga order (last narrative page first), you MAY do so and parse without the `manga` flag. However, the recommended approach is to write in narrative order and let the parser handle the transformation — this keeps the source document readable as a linear story.
+
+The `manga` transformation is purely structural. It does not alter dialogue text, action descriptions, character lists, or any other content — only page sequencing, slot column positions, and caption placement.
+
+> **Note:** The `make_manga()` method can also be called independently on an already-parsed `Comic` object if the transformation needs to be applied after the fact. See the [API Reference](./API_REFERENCE.md) for details.
+
+---
+
+## 13. Versioning
 
 This document describes CBML version **1.0**. Future versions will increment the minor version for backwards-compatible additions and the major version for breaking changes. A CBML document does not currently embed a version declaration; this may be introduced in a future version.
 
 ---
 
-## 13. Examples
+## 14. Examples
 
-### 13.1 Minimal Valid Document
+### 14.1 Minimal Valid Document
 
 The smallest possible valid CBML document:
 
@@ -487,7 +518,7 @@ loc: a dark room
 
 ---
 
-### 13.2 Single Page, Preset Layout
+### 14.2 Single Page, Preset Layout
 
 A quiet domestic scene. Two characters, four equal panels.
 
@@ -531,7 +562,7 @@ MAYA: "You should probably go."
 
 ---
 
-### 13.3 Multi-Page Action Sequence
+### 14.3 Multi-Page Action Sequence
 
 A chase through a rainy city. Irregular layouts, fast pacing.
 
@@ -615,7 +646,7 @@ mood: tense standoff in the dark
 
 ---
 
-### 13.4 Splash Page with Caption Narration
+### 14.4 Splash Page with Caption Narration
 
 A full-page image with layered narrator captions. No dialogue.
 
@@ -639,7 +670,7 @@ mood: immense, lonely, beautiful, the end of something
 
 ---
 
-### 13.5 Dialogue-Heavy Scene
+### 14.5 Dialogue-Heavy Scene
 
 An interrogation. Tight framing, varied bubble types, expressive caption use.
 
@@ -706,7 +737,7 @@ shot: tight closeup, profile, expression unreadable
 
 ---
 
-### 13.6 Complete Short Comic
+### 14.6 Complete Short Comic
 
 A three-page complete story demonstrating the full feature set — custom grids, presets, splash pages, captions, dialogue, thought bubbles, and varied mood and shot descriptions.
 

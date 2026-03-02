@@ -258,6 +258,32 @@ Unrecognised identifiers will generate warnings but will not block parsing.
 
 ---
 
+## Manga / Right-to-Left Support
+
+CBML documents are always written in western (left-to-right) reading order. To produce a manga-style comic, write your script forward as normal and pass `manga=True` at parse time:
+
+```python
+comic = parser.parse_file("my_manga.cbml", manga=True)
+```
+
+The parser will automatically:
+- **Reverse page order** — your last page becomes the reader's first page
+- **Mirror panel positions** — panels flip horizontally within each page grid
+- **Mirror caption positions** — e.g. `top-left` becomes `top-right`
+
+This keeps the `.cbml` source readable as a linear narrative while producing the correct physical layout for right-to-left reading.
+
+You can also apply the transformation to an already-parsed comic:
+
+```python
+western_comic = parser.parse_file("my_comic.cbml")
+manga_comic = CBMLParser.make_manga(western_comic)
+```
+
+See the [CBML Standard §12](./docs/CBML_STANDARD.md#12-reading-order-and-manga) for full details on the reading-order conventions.
+
+---
+
 ## Documentation
 
 - [CBML Standard](./CBML_STANDARD.md) — The full language specification

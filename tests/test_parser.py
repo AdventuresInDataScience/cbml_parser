@@ -376,3 +376,212 @@ chars: GHOST
 '''
         comic = parser.parse_string(cbml, known_characters=["KNOWN"])
         assert any("GHOST" in w for w in comic.warnings)
+
+
+# ---------------------------------------------------------------------------
+# Manga transformation
+# ---------------------------------------------------------------------------
+
+class TestMakeManga:
+
+    def test_page_order_reversed(self, parse_fixture):
+        """Multi-page fixture pages should appear in reverse order."""
+        western = parse_fixture("multi_page_action.cbml")
+        manga = CBMLParser.make_manga(western)
+        assert len(manga.pages) == 2
+        # The second western page is now first
+        assert manga.pages[0].index == 0
+        assert manga.pages[1].index == 1
+        # Verify by checking a location unique to each page
+        assert manga.pages[0].panels[0].loc == "construction_site_night"
+        assert manga.pages[1].panels[0].loc == "neon_alley_rain"
+
+    def test_page_indices_renumbered(self, parser):
+        cbml = '''
+## Manga Index Test
+
+PAGE preset:splash
+
+PANEL A
+loc: room_one
+> Page 1.
+
+PAGE preset:splash
+
+PANEL A
+loc: room_two
+> Page 2.
+
+PAGE preset:splash
+
+PANEL A
+loc: room_three
+> Page 3.
+'''
+        western = parser.parse_string(cbml)
+        manga = CBMLParser.make_manga(western)
+        assert [p.index for p in manga.pages] == [0, 1, 2]
+        assert manga.pages[0].panels[0].loc == "room_three"
+
+    def test_slots_mirrored_horizontally(self, parser):
+        cbml = '''
+## Mirror Test
+
+PAGE grid:3x2
+  A: [1, 1]
+  B: [2-3, 1]
+  C: [1-3, 2]
+
+PANEL A
+loc: room
+> A.
+
+PANEL B
+loc: room
+> B.
+
+PANEL C
+loc: room
+> C.
+'''
+        western = parser.parse_string(cbml)
+        manga = CBMLParser.make_manga(western)
+        slots = manga.pages[0].slots
+        # A was col (1,1) in a 3-col grid → mirrored to (3,3)
+        assert slots["A"].cols == (3, 3)
+        assert slots["A"].rows == (1, 1)
+        # B was col (2,3) → mirrored to (1,2)
+        assert slots["B"].cols == (1, 2)
+        assert slots["B"].rows == (1, 1)
+        # C was col (1,3) → mirrored to (1,3) — full-width stays full-width
+        assert slots["C"].cols == (1, 3)
+        assert slots["C"].rows == (2, 2)
+
+    def test_panel_slot_refs_updated(self, parser):
+        cbml = '''
+## Slot Ref Test
+
+PAGE grid:2x1
+  A: [1, 1]
+  B: [2, 1]
+
+PANEL A
+loc: left
+> Left panel.
+
+PANEL B
+loc: right
+> Right panel.
+'''
+        western = parser.parse_string(cbml)
+        manga = CBMLParser.make_manga(western)
+        panel_a = manga.pages[0].panels[0]
+        panel_b = manga.pages[0].panels[1]
+        # A was col (1,1) → mirrored to (2,2); B was (2,2) → (1,1)
+        assert panel_a.slot.cols == (2, 2)
+        assert panel_b.slot.cols == (1, 1)
+
+    def test_caption_positions_mirrored(self, parser):
+        cbml = '''
+## Caption Mirror
+
+PAGE preset:splash
+
+PANEL A
+loc: room
+> Action.
+[caption pos:top-left] Left caption.
+[caption pos:bottom-right] Right caption.
+[caption pos:top-center] Centre caption.
+'''
+        western = parser.parse_string(cbml)
+        manga = CBMLParser.make_manga(western)
+        caps = manga.pages[0].panels[0].captions
+        assert caps[0].pos == "top-right"
+        assert caps[1].pos == "bottom-left"
+        assert caps[2].pos == "top-center"
+
+    def test_preset_layout_mirrored(self, parser):
+        cbml = '''
+## Preset Mirror
+
+PAGE preset:grid-2x2
+
+PANEL A
+loc: top_left
+> A.
+
+PANEL B
+loc: top_right
+> B.
+
+PANEL C
+loc: bottom_left
+> C.
+
+PANEL D
+loc: bottom_right
+> D.
+'''
+        western = parser.parse_string(cbml)
+        manga = CBMLParser.make_manga(western)
+        slots = manga.pages[0].slots
+        # grid-2x2: A(1,1)(1,1) B(2,2)(1,1) C(1,1)(2,2) D(2,2)(2,2)
+        # Mirrored:  A→(2,2)(1,1) B→(1,1)(1,1) C→(2,2)(2,2) D→(1,1)(2,2)
+        assert slots["A"].cols == (2, 2)
+        assert slots["B"].cols == (1, 1)
+        assert slots["C"].cols == (2, 2)
+        assert slots["D"].cols == (1, 1)
+
+    def test_original_comic_not_mutated(self, parser):
+        cbml = '''
+## Immutability Test
+
+PAGE preset:grid-2x2
+
+PANEL A
+loc: room
+> A.
+
+PANEL B
+loc: room
+> B.
+
+PANEL C
+loc: room
+> C.
+
+PANEL D
+loc: room
+> D.
+'''
+        western = parser.parse_string(cbml)
+        original_a_cols = western.pages[0].slots["A"].cols
+        CBMLParser.make_manga(western)
+        assert western.pages[0].slots["A"].cols == original_a_cols
+
+    def test_manga_flag_on_parse_string(self, parser):
+        cbml = '''
+## Flag Test
+
+PAGE preset:splash
+
+PANEL A
+loc: room
+> Action.
+
+PAGE preset:splash
+
+PANEL A
+loc: other_room
+> Action.
+'''
+        comic = parser.parse_string(cbml, manga=True)
+        assert comic.pages[0].panels[0].loc == "other_room"
+        assert comic.pages[1].panels[0].loc == "room"
+
+    def test_manga_flag_on_parse_file(self, parse_fixture):
+        """parse_file with manga=True should also reverse pages."""
+        western = parse_fixture("multi_page_action.cbml")
+        manga = parse_fixture("multi_page_action.cbml", manga=True)
+        assert manga.pages[0].panels[0].loc == western.pages[-1].panels[0].loc
