@@ -362,3 +362,17 @@ chars: UNKNOWN_CHAR
         # Should not raise — unknown char is a warning only
         comic = parser.parse_string(cbml, known_characters=["KNOWN_CHAR"])
         assert comic.pages[0].panels[0].chars == ["UNKNOWN_CHAR"]
+
+    def test_warnings_preserved_on_comic(self, parser):
+        cbml = '''
+## Warnings Preserved
+
+PAGE preset:splash
+
+PANEL A
+loc: forest
+chars: GHOST
+> A ghost in the forest.
+'''
+        comic = parser.parse_string(cbml, known_characters=["KNOWN"])
+        assert any("GHOST" in w for w in comic.warnings)

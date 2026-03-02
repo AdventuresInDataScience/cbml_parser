@@ -1,5 +1,119 @@
 import pytest
-from cbml_parser import CBMLParser, CBMLValidationError
+from cbml_parser import CBMLParser, CBMLValidationError, CBMLParseError, Slot
+
+
+# ---------------------------------------------------------------------------
+# Slot.overlaps direct unit tests
+# ---------------------------------------------------------------------------
+
+class TestSlotOverlaps:
+
+    def test_identical_slots_overlap(self):
+        a = Slot((1, 2), (1, 2))
+        b = Slot((1, 2), (1, 2))
+        assert a.overlaps(b)
+
+    def test_disjoint_columns_no_overlap(self):
+        a = Slot((1, 1), (1, 1))
+        b = Slot((2, 2), (1, 1))
+        assert not a.overlaps(b)
+
+    def test_disjoint_rows_no_overlap(self):
+        a = Slot((1, 1), (1, 1))
+        b = Slot((1, 1), (2, 2))
+        assert not a.overlaps(b)
+
+    def test_adjacent_no_overlap(self):
+        a = Slot((1, 2), (1, 1))
+        b = Slot((3, 4), (1, 1))
+        assert not a.overlaps(b)
+
+    def test_partial_column_overlap(self):
+        a = Slot((1, 2), (1, 1))
+        b = Slot((2, 3), (1, 1))
+        assert a.overlaps(b)
+
+    def test_single_cell_overlap(self):
+        a = Slot((1, 3), (1, 3))
+        b = Slot((3, 3), (3, 3))
+        assert a.overlaps(b)
+
+    def test_contained_slot_overlaps(self):
+        """A small slot fully inside a larger one should overlap."""
+        big = Slot((1, 4), (1, 4))
+        small = Slot((2, 3), (2, 3))
+        assert big.overlaps(small)
+        assert small.overlaps(big)
+
+    def test_overlap_is_symmetric(self):
+        a = Slot((1, 2), (1, 2))
+        b = Slot((2, 3), (2, 3))
+        assert a.overlaps(b) == b.overlaps(a)
+
+
+# ---------------------------------------------------------------------------
+# _parse_range edge-case tests
+# ---------------------------------------------------------------------------
+
+class TestParseRangeEdgeCases:
+
+    def test_single_value(self, parser):
+        cbml = '''
+## Range Test
+
+PAGE grid:1x1
+  A: [1, 1]
+
+PANEL A
+loc: room
+> Simple.
+'''
+        comic = parser.parse_string(cbml)
+        assert comic.pages[0].slots["A"].cols == (1, 1)
+        assert comic.pages[0].slots["A"].rows == (1, 1)
+
+    def test_range_value(self, parser):
+        cbml = '''
+## Range Test
+
+PAGE grid:3x3
+  A: [1-3, 1-3]
+
+PANEL A
+loc: room
+> Full grid.
+'''
+        comic = parser.parse_string(cbml)
+        assert comic.pages[0].slots["A"].cols == (1, 3)
+        assert comic.pages[0].slots["A"].rows == (1, 3)
+
+    def test_zero_range_rejected(self, parser):
+        cbml = '''
+## Range Test
+
+PAGE grid:2x2
+  A: [0, 1]
+
+PANEL A
+loc: room
+> Bad range.
+'''
+        with pytest.raises(CBMLParseError):
+            parser.parse_string(cbml)
+
+    def test_inverted_range_rejected(self, parser):
+        cbml = '''
+## Range Test
+
+PAGE grid:3x3
+  A: [3-1, 1]
+
+PANEL A
+loc: room
+> Inverted range.
+'''
+        with pytest.raises(CBMLParseError):
+            parser.parse_string(cbml)
 
 
 class TestValidationErrors:

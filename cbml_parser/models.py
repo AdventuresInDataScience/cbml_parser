@@ -74,3 +74,4 @@ class Comic:
     title: str
     metadata: dict[str, str]
     pages: list[Page] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)

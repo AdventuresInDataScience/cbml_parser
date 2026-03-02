@@ -207,6 +207,7 @@ class CBMLParser:
         result = validate_comic(comic, known_characters=known_characters, known_locations=known_locations)
         if not result.valid:
             raise CBMLValidationError(errors=result.errors, warnings=result.warnings)
+        comic.warnings = result.warnings
         return comic
 
     def validate_file(
@@ -275,11 +276,13 @@ class CBMLParser:
         for line_number, raw_line in enumerate(lines, start=1):
             line = raw_line.strip()
 
-            # Skip blank lines and comments
-            if not line or line.startswith('#'):
+            # Skip blank lines and comments (but not ## title lines)
+            if not line:
+                continue
+            if line.startswith('#') and not line.startswith('## '):
                 continue
 
-            # ── Title ───────────────────────────────────────────────
+            # ── Title (only valid when we haven't left the header) ──
             m = _RE_TITLE.match(line)
             if m:
                 if title is not None:
@@ -431,8 +434,8 @@ class CBMLParser:
                         current_panel.dialogue.append(dl)
                         continue
 
-            # ── Header fields ────────────────────────────────────────
-            if in_header or title is not None:
+            # ── Header fields (only in header section) ────────────────
+            if in_header:
                 m = _RE_HEADER_FIELD.match(line)
                 if m:
                     key = m.group(1).lower()
