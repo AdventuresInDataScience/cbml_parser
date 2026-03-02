@@ -1,0 +1,13 @@
+## Undefined Slot Test
+
+PAGE grid:2x2
+  A: [1, 1]
+  B: [2, 1]
+
+PANEL A
+loc: some_place
+> Panel A is fine.
+
+PANEL Z
+loc: some_place
+> Panel Z references a slot that was never defined.

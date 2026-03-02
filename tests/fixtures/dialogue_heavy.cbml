@@ -1,0 +1,58 @@
+## Salt
+author: M. Oduya
+genre: crime noir
+
+PAGE grid:3x3
+  A: [1-3, 1]
+  B: [1, 2]
+  C: [2, 2]
+  D: [3, 2]
+  E: [1-2, 3]
+  F: [3, 3]
+
+PANEL A
+loc: interrogation_room
+chars: DETECTIVE_HARA, VINCENT
+shot: wide two-shot across the table, harsh overhead light
+mood: clinical, the room itself feels like a weapon
+> Detective Hara and Vincent sit across from each other.
+[caption bg:#1a1a1a color:#ffffff pos:top-left] Room 4. 11:58 PM.
+
+PANEL B
+loc: interrogation_room
+chars: DETECTIVE_HARA
+shot: medium closeup, leaning forward
+mood: controlled aggression
+> Hara leans in, fingers laced
+DETECTIVE_HARA: "You were seen at the harbour."
+DETECTIVE_HARA: "Don't tell me you were there for the view."
+
+PANEL C
+loc: interrogation_room
+chars: VINCENT
+shot: medium, arms crossed, half in shadow
+mood: studied indifference
+> Vincent says nothing. He examines the ceiling.
+
+PANEL D
+loc: interrogation_room
+chars: DETECTIVE_HARA
+shot: extreme closeup on eyes
+mood: patience as a weapon
+> She has done this a thousand times.
+DETECTIVE_HARA: ?"The silence tells me everything, Vincent."?
+
+PANEL E
+loc: interrogation_room
+chars: VINCENT
+shot: medium, finally meeting her eyes
+mood: the mask slipping, just slightly
+> For the first time, Vincent looks directly at her.
+VINCENT: "You want to know what I saw at the harbour?"
+VINCENT: "You really, really don't."
+
+PANEL F
+loc: interrogation_room
+chars: DETECTIVE_HARA
+shot: tight closeup, profile, expression unreadable
+> Hara places a photograph on the table, face down.

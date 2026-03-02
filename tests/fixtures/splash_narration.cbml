@@ -1,0 +1,15 @@
+## The Last Orbit
+author: S. Brennan
+genre: science fiction
+
+PAGE preset:splash
+
+PANEL A
+loc: space_earth_below
+chars: COMMANDER_YASH
+shot: extreme wide, astronaut tiny against curvature of the Earth
+mood: immense, lonely, beautiful
+> Commander Yash floats beyond the airlock. The Earth turns below, impossibly blue.
+[caption bg:#000000 color:#aaddff pos:top-left] She had been up here for 312 days.
+[caption bg:#000000 color:#aaddff pos:top-left] The last transmission came on day 301.
+[caption bg:#000000 color:#ffffff pos:bottom-right] She decided to come home anyway.

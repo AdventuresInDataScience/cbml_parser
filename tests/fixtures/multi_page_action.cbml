@@ -1,0 +1,73 @@
+
+## Ghost Signal
+author: T. Navarro
+genre: cyberpunk thriller
+
+PAGE grid:3x2
+  A: [1-2, 1]
+  B: [3, 1-2]
+  C: [1, 2]
+  D: [2, 2]
+
+PANEL A
+loc: neon_alley_rain
+chars: KAI
+shot: wide, low angle, running toward camera
+mood: desperate, urgent
+> Kai sprints through the neon-lit alley, puddles exploding underfoot
+[caption bg:#0d0d1a color:#ff4444 pos:top-left] Three minutes behind her.
+
+PANEL B
+loc: neon_alley_rain
+chars: AGENT_CROSS
+shot: closeup face, rain on visor
+mood: cold, relentless
+> Agent Cross raises one fist — a silent signal
+
+PANEL C
+loc: neon_alley_rain
+chars: KAI
+shot: over-the-shoulder, glancing back
+> Kai looks back — blue strobes, closer than before
+
+PANEL D
+loc: neon_alley_rain
+chars: KAI
+shot: extreme closeup, eyes wide
+> Her eyes: calculating, terrified, alive
+KAI: ~Left. Always go left. Ghost taught me that.~
+
+PAGE grid:2x3
+  A: [1, 1-2]
+  B: [2, 1]
+  C: [2, 2]
+  D: [1-2, 3]
+
+PANEL A
+loc: construction_site_night
+chars: KAI
+shot: full body, dynamic leap
+mood: kinetic, wild
+> Kai launches herself off the fence into the darkness
+
+PANEL B
+loc: construction_site_night
+chars: AGENT_CROSS
+shot: medium shot, arriving at fence
+> Cross reaches the fence and stops
+AGENT_CROSS: ?"Grid search. She's still inside."?
+
+PANEL C
+loc: construction_site_night
+chars: KAI
+shot: hiding in shadow behind pillar
+mood: held breath
+> Kai presses flat against the pillar, eyes shut, counting
+
+PANEL D
+loc: construction_site_night
+chars: KAI, AGENT_CROSS
+shot: wide, two figures at opposite ends of vast dark floor
+mood: tense standoff in the dark
+> Fifty metres of darkness and silence between them
+[caption pos:bottom-center] Neither of them was breathing.

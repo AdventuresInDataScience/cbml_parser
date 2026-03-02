@@ -1,0 +1,35 @@
+## The Morning After
+author: J. Okafor
+genre: drama
+
+PAGE preset:grid-2x2
+
+PANEL A
+loc: apartment_kitchen
+chars: MAYA
+shot: medium shot, profile
+mood: quiet, melancholy, early morning light
+> Maya stands at the counter, hands wrapped around a coffee mug
+[caption bg:#111111 color:#cccccc pos:top-left] 6:43 AM.
+
+PANEL B
+loc: apartment_kitchen
+chars: DANIEL
+shot: medium shot from doorway
+mood: tentative, soft
+> Daniel appears in the kitchen doorway, still in yesterday's clothes
+
+PANEL C
+loc: apartment_kitchen
+chars: MAYA, DANIEL
+shot: two-shot across the kitchen
+mood: heavy silence
+> They look at each other. Neither speaks first.
+
+PANEL D
+loc: apartment_kitchen
+chars: MAYA, DANIEL
+shot: closeup on Maya's hands
+mood: resignation
+> Her knuckles are white.
+MAYA: "You should probably go."

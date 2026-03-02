@@ -1,0 +1,8 @@
+## Dialogue No Chars Test
+
+PAGE preset:splash
+
+PANEL A
+loc: dark_alley
+> A figure speaks into the void.
+REX: "Hello?"

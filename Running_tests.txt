@@ -1,0 +1,11 @@
+# Install in dev mode
+pip install -e ".[dev]"
+
+# Run all tests
+pytest
+
+# With coverage
+pytest --cov=cbml_parser --cov-report=term-missing
+
+# Run a specific test class
+pytest tests/test_parser.py::TestDialogueHeavy -v
