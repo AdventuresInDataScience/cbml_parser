@@ -26,9 +26,9 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/yourname/cbml-parser"
-"Bug Tracker" = "https://github.com/yourname/cbml-parser/issues"
-"Documentation" = "https://github.com/yourname/cbml-parser/blob/main/docs/CBML_STANDARD.md"
+"Homepage" = "https://github.com/AdventuresInDataScience/cbml-parser"
+"Bug Tracker" = "https://github.com/AdventuresInDataScience/cbml-parser/issues"
+"Documentation" = "https://github.com/AdventuresInDataScience/cbml-parser/blob/main/docs/CBML_STANDARD.md"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
