@@ -1,13 +1,13 @@
 
 # cbml-parser
 
-A Python library for parsing [CBML (Comic Book Markup Language)](./CBML_STANDARD.md) documents into structured data, ready for use in comic generation pipelines or any other downstream tooling.
+A Python library for parsing [CBML (Comic Book Markup Language)](./docs/CBML_STANDARD.md) documents into structured data, ready for use in comic generation pipelines or any other downstream tooling.
 
 ---
 
 ## What is CBML?
 
-CBML is a plain-text format for authoring comic books by hand. It defines page layouts, panel compositions, characters, locations, dialogue, and caption boxes in a lightweight, human-readable syntax. See the [CBML Standard](./CBML_STANDARD.md) for the full language specification.
+CBML is a plain-text format for authoring comic books by hand. It defines page layouts, panel compositions, characters, locations, dialogue, and caption boxes in a lightweight, human-readable syntax. See the [CBML Standard](./docs/CBML_STANDARD.md) for the full language specification.
 
 A CBML document looks like this:
 
@@ -286,8 +286,8 @@ See the [CBML Standard §12](./docs/CBML_STANDARD.md#12-reading-order-and-manga)
 
 ## Documentation
 
-- [CBML Standard](./CBML_STANDARD.md) — The full language specification
-- [API Reference](./API_REFERENCE.md) — Complete Python API documentation
+- [CBML Standard](./docs/CBML_STANDARD.md) — The full language specification
+- [API Reference](./docs/API_REFERENCE.md) — Complete Python API documentation
 
 ---
 
